@@ -2,13 +2,16 @@
 
 namespace osslibs\Curl;
 
-class Curl implements CurlClient
+abstract class AbstractCurlClient implements CurlClient
 {
-    private $resource;
+    /**
+     * @var CurlClient
+     */
+    private $client;
 
-    public function __construct($resource = null)
+    public function __construct(CurlClient $client)
     {
-        $this->resource = $resource ?? curl_init();
+        $this->client = $client;
     }
 
     /**
@@ -16,7 +19,7 @@ class Curl implements CurlClient
      */
     public function resource()
     {
-        return $this->resource;
+        return $this->client->resource();
     }
 
     /**
@@ -24,7 +27,7 @@ class Curl implements CurlClient
      */
     public function setopt($option, $value)
     {
-        return curl_setopt($this->resource, $option, $value);
+        return $this->client->setopt($option, $value);
     }
 
     /**
@@ -32,7 +35,7 @@ class Curl implements CurlClient
      */
     public function setopt_array(array $options)
     {
-        return curl_setopt_array($this->resource, $options);
+        return $this->client->setopt_array($options);
     }
 
     /**
@@ -40,7 +43,7 @@ class Curl implements CurlClient
      */
     public function exec()
     {
-        return curl_exec($this->resource);
+        return $this->client->exec();
     }
 
     /**
@@ -48,7 +51,7 @@ class Curl implements CurlClient
      */
     public function getinfo($opt = null)
     {
-        return curl_getinfo($this->resource, $opt);
+        return $this->client->getinfo($opt);
     }
 
     /**
@@ -56,7 +59,7 @@ class Curl implements CurlClient
      */
     public function error()
     {
-        return curl_error($this->resource);
+        return $this->client->error();
     }
 
     /**
@@ -64,7 +67,7 @@ class Curl implements CurlClient
      */
     public function errno()
     {
-        return curl_errno($this->resource);
+        return $this->client->errno();
     }
 
     /**
@@ -72,7 +75,7 @@ class Curl implements CurlClient
      */
     public function escape($str)
     {
-        return curl_escape($this->resource, $str);
+        return $this->client->escape($str);
     }
 
     /**
@@ -80,8 +83,7 @@ class Curl implements CurlClient
      */
     public function close()
     {
-        curl_close($this->resource);
-        $this->resource = null;
+        return $this->client->close();
     }
 
     /**
@@ -89,7 +91,7 @@ class Curl implements CurlClient
      */
     public function pause($bitmask)
     {
-        return curl_pause($this->resource, $bitmask);
+        return $this->client->pause($bitmask);
     }
 
     /**
@@ -97,6 +99,6 @@ class Curl implements CurlClient
      */
     public function reset()
     {
-        return curl_reset($this->resource);
+        return $this->client->reset();
     }
 }
