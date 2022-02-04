@@ -17,5 +17,10 @@
         "psr-4": {
             "osslibs\\Curl\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "osslibs\\Curl\\": "tests/"
+        }
     }
 }
