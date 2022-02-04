@@ -11,7 +11,7 @@ class CurlTest extends TestCase
         $headers = ['aA: bB', 'cC: dD'];
         $expect = ['aA' => 'bB', 'cC' => 'dD'];
 
-        $curl = new Curl();
+        $curl = new CurlHandler();
         $curl->setopt(CURLOPT_CUSTOMREQUEST, "GET");
         $curl->setopt(CURLOPT_URL, "http://headers.jsontest.com/");
         $curl->setopt(CURLOPT_HTTPHEADER, $headers);
@@ -28,7 +28,7 @@ class CurlTest extends TestCase
         $text = json_encode((object)['a' => 'A', 'b' => 'B']);
         $expect = ['original' => $text, 'md5' => md5($text)];
 
-        $curl = new Curl();
+        $curl = new CurlHandler();
         $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
         $curl->setopt(CURLOPT_URL, "http://md5.jsontest.com/");
         $curl->setopt(CURLOPT_RETURNTRANSFER, 1);
@@ -45,7 +45,7 @@ class CurlTest extends TestCase
         $text = json_encode((object)['a' => 'A', 'b' => 'B']);
         $expect = ['original' => $text, 'md5' => md5($text)];
 
-        $curl = new Curl();
+        $curl = new CurlHandler();
         $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
         $curl->setopt(CURLOPT_URL, "badscheme://badsub.badhost.badtld/badpath");
         $curl->setopt(CURLOPT_RETURNTRANSFER, 1);
@@ -61,7 +61,7 @@ class CurlTest extends TestCase
         $text = json_encode((object)['a' => 'A', 'b' => 'B']);
         $expect = ['original' => $text, 'md5' => md5($text)];
 
-        $curl = new Curl();
+        $curl = new CurlHandler();
         $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
         $curl->setopt(CURLOPT_URL, "badscheme://badsub.badhost.badtld/badpath");
         $curl->setopt(CURLOPT_RETURNTRANSFER, 1);

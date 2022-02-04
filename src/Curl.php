@@ -2,101 +2,27 @@
 
 namespace osslibs\Curl;
 
-class Curl implements CurlClient
+interface Curl
 {
-    private $resource;
+    public function resource();
 
-    public function __construct($resource = null)
-    {
-        $this->resource = $resource ?? curl_init();
-    }
+    public function setopt($option, $value);
 
-    /**
-     * @inheritDoc
-     */
-    public function resource()
-    {
-        return $this->resource;
-    }
+    public function setopt_array(array $options);
 
-    /**
-     * @inheritDoc
-     */
-    public function setopt($option, $value)
-    {
-        return curl_setopt($this->resource, $option, $value);
-    }
+    public function exec();
 
-    /**
-     * @inheritDoc
-     */
-    public function setopt_array(array $options)
-    {
-        return curl_setopt_array($this->resource, $options);
-    }
+    public function getinfo($opt = null);
 
-    /**
-     * @inheritDoc
-     */
-    public function exec()
-    {
-        return curl_exec($this->resource);
-    }
+    public function error();
 
-    /**
-     * @inheritDoc
-     */
-    public function getinfo($opt = null)
-    {
-        return curl_getinfo($this->resource, $opt);
-    }
+    public function errno();
 
-    /**
-     * @inheritDoc
-     */
-    public function error()
-    {
-        return curl_error($this->resource);
-    }
+    public function escape($str);
 
-    /**
-     * @inheritDoc
-     */
-    public function errno()
-    {
-        return curl_errno($this->resource);
-    }
+    public function close();
 
-    /**
-     * @inheritDoc
-     */
-    public function escape($str)
-    {
-        return curl_escape($this->resource, $str);
-    }
+    public function pause($bitmask);
 
-    /**
-     * @inheritDoc
-     */
-    public function close()
-    {
-        curl_close($this->resource);
-        $this->resource = null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function pause($bitmask)
-    {
-        return curl_pause($this->resource, $bitmask);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function reset()
-    {
-        return curl_reset($this->resource);
-    }
+    public function reset();
 }
