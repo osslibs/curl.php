@@ -17,10 +17,10 @@ class CurlTest extends TestCase
         $curl->setopt(CURLOPT_HTTPHEADER, $headers);
         $curl->setopt(CURLOPT_RETURNTRANSFER, 1);
 
-        $data = $curl->exec();
-
-        $this->assertLessThan(300, $curl->getinfo(CURLINFO_RESPONSE_CODE));
-        $this->assertArraySubset($expect, (array)json_decode($data));
+        $this->assertArraySubset($expect, (array)json_decode($curl->exec()));
+        $this->assertNotSame(0, $curl->getinfo(CURLINFO_RESPONSE_CODE));
+        $this->assertSame(0, $curl->errno());
+        $this->assertSame('', $curl->error());
     }
 
     public function testBody()
@@ -34,42 +34,63 @@ class CurlTest extends TestCase
         $curl->setopt(CURLOPT_RETURNTRANSFER, 1);
         $curl->setopt(CURLOPT_POSTFIELDS, 'text=' . $text);
 
-        $data = $curl->exec();
-
-        $this->assertLessThan(300, $curl->getinfo(CURLINFO_RESPONSE_CODE));
-        $this->assertArraySubset($expect, (array)json_decode($data));
+        $this->assertArraySubset($expect, (array)json_decode($curl->exec()));
+        $this->assertNotSame(0, $curl->getinfo(CURLINFO_RESPONSE_CODE));
+        $this->assertSame(0, $curl->errno());
+        $this->assertSame('', $curl->error());
     }
 
-    public function testCannotConnect()
+    public function testBadProtocol()
     {
         $text = json_encode((object)['a' => 'A', 'b' => 'B']);
         $expect = ['original' => $text, 'md5' => md5($text)];
 
         $curl = new CurlHandler();
         $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
-        $curl->setopt(CURLOPT_URL, "badscheme://badsub.badhost.badtld/badpath");
+        $curl->setopt(CURLOPT_URL, "badscheme://blahblah");
         $curl->setopt(CURLOPT_RETURNTRANSFER, 1);
 
         $data = $curl->exec();
 
-        $this->assertSame(false, $data);
+        $this->assertSame(false, $curl->exec());
         $this->assertSame(0, $curl->getinfo(CURLINFO_RESPONSE_CODE));
+        $this->assertNotSame(0, $curl->errno());
+        $this->assertNotSame('', $curl->error());
+    }
+
+    public function testFailedToConnect()
+    {
+        $text = json_encode((object)['a' => 'A', 'b' => 'B']);
+        $expect = ['original' => $text, 'md5' => md5($text)];
+
+        $curl = new CurlHandler();
+        $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
+        $curl->setopt(CURLOPT_URL, "badscheme://blahblah");
+        $curl->setopt(CURLOPT_RETURNTRANSFER, 1);
+
+        $data = $curl->exec();
+
+        $this->assertSame(false, $curl->exec());
+        $this->assertSame(0, $curl->getinfo(CURLINFO_RESPONSE_CODE));
+        $this->assertNotSame(0, $curl->errno());
+        $this->assertNotSame('', $curl->error());
     }
 
     public function testTimeout()
     {
         $text = json_encode((object)['a' => 'A', 'b' => 'B']);
         $expect = ['original' => $text, 'md5' => md5($text)];
+        $timeout = 1;
 
         $curl = new CurlHandler();
         $curl->setopt(CURLOPT_CUSTOMREQUEST, "POST");
-        $curl->setopt(CURLOPT_URL, "badscheme://badsub.badhost.badtld/badpath");
+        $curl->setopt(CURLOPT_URL, "http://headers.jsontest.com/");
         $curl->setopt(CURLOPT_RETURNTRANSFER, 1);
-        $curl->setopt(CURLOPT_TIMEOUT_MS, 5);
+        $curl->setopt(CURLOPT_CONNECTTIMEOUT_MS, $timeout);
 
-        $data = $curl->exec();
-
-        $this->assertSame(false, $data);
+        $this->assertSame(false, $curl->exec());
         $this->assertSame(0, $curl->getinfo(CURLINFO_RESPONSE_CODE));
+        $this->assertNotSame(0, $curl->errno());
+        $this->assertNotSame('', $curl->error());
     }
 }
